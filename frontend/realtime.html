@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Monitoring - DTMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <h2>DTMS</h2>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h3 id="usernameDisplay">User</h3>
+                    <p id="userRoleDisplay">User</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="nodes.html">
+                            <i class="fas fa-server"></i>
+                            <span>Nodes</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="realtime.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Real-time</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#alerts">
+                            <i class="fas fa-bell"></i>
+                            <span>Alerts</span>
+                            <span class="badge badge-danger" id="alertsCount">0</span>
+                        </a>
+                    </li>
+                    <li class="admin-only hidden" id="adminLink">
+                        <a href="admin.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-nav">
+                <div class="page-title">
+                    <h1>Real-time Traffic Monitoring</h1>
+                    <p>Live view of network traffic across all your nodes</p>
+                </div>
+                <div class="top-nav-actions">
+                    <div class="realtime-controls">
+                        <div class="control-group">
+                            <label>Refresh Interval:</label>
+                            <select id="refreshInterval">
+                                <option value="5">5 seconds</option>
+                                <option value="10" selected>10 seconds</option>
+                                <option value="30">30 seconds</option>
+                                <option value="60">1 minute</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="toggleRealtime">
+                            <i class="fas fa-play"></i> Start Live
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="realtime-content">
+                <!-- Stats Row -->
+                <div class="realtime-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="livePackets">0</div>
+                        <div class="stat-label">Packets/Second</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveBandwidth">0 Mbps</div>
+                        <div class="stat-label">Bandwidth</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveNodes">0</div>
+                        <div class="stat-label">Active Nodes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="liveAlerts">0</div>
+                        <div class="stat-label">Active Alerts</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="realtime-charts">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Live Traffic Flow</h3>
+                            <div class="chart-controls">
+                                <button class="btn-icon" id="pauseChart">
+                                    <i class="fas fa-pause"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="liveTrafficChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Protocol Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="liveProtocolChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Traffic Table -->
+                <div class="realtime-table">
+                    <div class="section-header">
+                        <h3>Live Traffic Events</h3>
+                        <div class="table-filters">
+                            <select id="trafficFilter">
+                                <option value="all">All Traffic</option>
+                                <option value="incoming">Incoming Only</option>
+                                <option value="outgoing">Outgoing Only</option>
+                                <option value="internal">Internal Only</option>
+                            </select>
+                            <select id="nodeFilter">
+                                <option value="all">All Nodes</option>
+                                <!-- Nodes will be populated here -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Source IP</th>
+                                    <th>Destination IP</th>
+                                    <th>Protocol</th>
+                                    <th>Port</th>
+                                    <th>Size</th>
+                                    <th>Type</th>
+                                    <th>Node</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trafficTableBody">
+                                <!-- Traffic data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Node Status -->
+                <div class="node-status-grid">
+                    <div class="section-header">
+                        <h3>Node Status</h3>
+                    </div>
+                    <div class="nodes-live-grid" id="nodesLiveGrid">
+                        <!-- Node status cards will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/realtime.js"></script>
+</body>
+</html>

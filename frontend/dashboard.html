@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DTMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <h2>DTMS</h2>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h3 id="usernameDisplay">User</h3>
+                    <p id="userRoleDisplay">User</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="nodes.html">
+                            <i class="fas fa-server"></i>
+                            <span>Nodes</span>
+                            <span class="badge" id="nodesCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="realtime.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Real-time</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#alerts">
+                            <i class="fas fa-bell"></i>
+                            <span>Alerts</span>
+                            <span class="badge badge-danger" id="alertsCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#reports">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                    <li class="admin-only hidden" id="adminLink">
+                        <a href="admin.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    </li>
+                                        <li class="sidebar-f">
+                        <a href="#" id="logoutBtn">
+                           <i class="fas fa-sign-out-alt"></i>
+                             <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+            
+
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Navigation -->
+            <header class="top-nav">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search nodes, traffic...">
+                </div>
+                <div class="top-nav-actions">
+                    <button class="btn-icon" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger">3</span>
+                    </button>
+                    <button class="btn-icon" title="Add Node" id="addNodeBtn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="btn-icon" title="Refresh" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalNodes">0</h3>
+                            <p>Active Nodes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalTraffic">0</h3>
+                            <p>Packets Today</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalAlerts">0</h3>
+                            <p>Active Alerts</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="bandwidthUsage">0 MB</h3>
+                            <p>Bandwidth Used</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Traffic Overview</h3>
+                            <select id="trafficPeriod">
+                                <option value="24">Last 24 Hours</option>
+                                <option value="7">Last 7 Days</option>
+                                <option value="30">Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="trafficChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Protocol Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="protocolChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="activity-section">
+                    <div class="section-header">
+                        <h3>Recent Activity</h3>
+                        <a href="realtime.html" class="view-all">View All</a>
+                    </div>
+                    <div class="activity-list" id="activityList">
+                        <!-- Activity items will be loaded here -->
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-server text-primary"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p>No recent activity</p>
+                                <span class="activity-time">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Node Status -->
+                <div class="nodes-section">
+                    <div class="section-header">
+                        <h3>Node Status</h3>
+                        <a href="nodes.html" class="view-all">Manage Nodes</a>
+                    </div>
+                    <div class="nodes-grid" id="nodesGrid">
+                        <!-- Nodes will be loaded here -->
+                        <div class="no-nodes">
+                            <i class="fas fa-server fa-3x"></i>
+                            <p>No nodes added yet</p>
+                            <button class="btn btn-primary" id="addFirstNode">
+                                <i class="fas fa-plus"></i> Add Your First Node
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Node Modal -->
+    <div class="modal" id="addNodeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Node</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addNodeForm">
+                    <div class="form-group">
+                        <label for="nodeName">Node Name</label>
+                        <input type="text" id="nodeName" name="node_name" required 
+                               placeholder="e.g., Main Server, Office Router">
+                    </div>
+                    <div class="form-group">
+                        <label for="nodeIP">IP Address</label>
+                        <input type="text" id="nodeIP" name="node_ip" required 
+                               placeholder="e.g., 192.168.1.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="nodeLocation">Location</label>
+                        <input type="text" id="nodeLocation" name="node_location" 
+                               placeholder="e.g., Data Center, Office">
+                    </div>
+                    <div class="form-group">
+                        <label>Node Type</label>
+                        <div class="radio-group">
+                            <label class="radio">
+                                <input type="radio" name="node_type" value="server" checked>
+                                <span>Server</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="node_type" value="router">
+                                <span>Router</span>
+                            </label>
+                            <label class="radio">
+                                <input type="radio" name="node_type" value="firewall">
+                                <span>Firewall</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+                <div class="api-key-display hidden" id="apiKeyDisplay">
+                    <div class="alert alert-warning">
+                        <h4><i class="fas fa-key"></i> API Key Generated</h4>
+                        <p>Save this API key securely. You won't be able to see it again.</p>
+                        <div class="api-key-value">
+                            <code id="apiKeyValue"></code>
+                            <button class="btn-icon" id="copyApiKey">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button class="btn btn-primary" id="saveNodeBtn">Add Node</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

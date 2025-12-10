@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Node Management - DTMS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-network-wired"></i>
+                    <h2>DTMS</h2>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-info">
+                    <h3 id="usernameDisplay">User</h3>
+                    <p id="userRoleDisplay">User</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="nodes.html">
+                            <i class="fas fa-server"></i>
+                            <span>Nodes</span>
+                            <span class="badge" id="nodesCount">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="realtime.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Real-time</span>
+                        </a>
+                    </li>
+                    <li class="admin-only hidden" id="adminLink">
+                        <a href="admin.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-nav">
+                <div class="page-title">
+                    <h1>Node Management</h1>
+                    <p>Manage your monitoring nodes and their configurations</p>
+                </div>
+                <div class="top-nav-actions">
+                    <button class="btn btn-primary" id="addNewNode">
+                        <i class="fas fa-plus"></i> Add New Node
+                    </button>
+                </div>
+            </header>
+
+            <div class="nodes-content">
+                <!-- Node Stats -->
+                <div class="nodes-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalNodesCount">0</h3>
+                            <p>Total Nodes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="activeNodesCount">0</h3>
+                            <p>Active Nodes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="inactiveNodesCount">0</h3>
+                            <p>Inactive Nodes</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="nodeTraffic">0</h3>
+                            <p>Packets Today</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nodes Grid -->
+                <div class="nodes-management">
+                    <div class="section-header">
+                        <h2>Your Monitoring Nodes</h2>
+                        <div class="view-toggle">
+                            <button class="view-btn active" data-view="grid">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-btn" data-view="list">
+                                <i class="fas fa-list"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Grid View -->
+                    <div class="nodes-grid-view active" id="gridView">
+                        <div class="nodes-grid" id="nodesListGrid">
+                            <!-- Node cards will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- List View -->
+                    <div class="nodes-list-view" id="listView">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Node Name</th>
+                                        <th>IP Address</th>
+                                        <th>Location</th>
+                                        <th>Status</th>
+                                        <th>Last Activity</th>
+                                        <th>Traffic</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nodesTableBody">
+                                    <!-- Nodes will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- No Nodes Message -->
+                    <div class="no-nodes-message" id="noNodesMessage">
+                        <div class="empty-state">
+                            <i class="fas fa-server fa-4x"></i>
+                            <h3>No Nodes Added Yet</h3>
+                            <p>Start monitoring your network by adding your first node.</p>
+                            <button class="btn btn-primary" id="addFirstNodeBtn">
+                                <i class="fas fa-plus"></i> Add Your First Node
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Node Configuration Guide -->
+                <div class="configuration-guide">
+                    <div class="guide-header">
+                        <h3><i class="fas fa-book"></i> Node Configuration Guide</h3>
+                    </div>
+                    <div class="guide-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Install Node Agent</h4>
+                                <p>Download and install the monitoring agent on your server or device.</p>
+                                <code>curl -s https://dtms.example.com/install.sh | bash</code>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Configure API Key</h4>
+                                <p>Use the generated API key to authenticate your node with the system.</p>
+                                <code>export DTMS_API_KEY="your_api_key_here"</code>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Start Monitoring</h4>
+                                <p>Start the agent and verify connection in the dashboard.</p>
+                                <code>sudo systemctl start dtms-agent</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Node Modal -->
+    <div class="modal" id="nodeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="nodeModalTitle">Add New Node</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="nodeForm">
+                    <input type="hidden" id="nodeId">
+                    <div class="form-group">
+                        <label for="nodeName">Node Name *</label>
+                        <input type="text" id="nodeName" name="node_name" required 
+                               placeholder="e.g., Web Server, Office Router">
+                    </div>
+                    <div class="form-group">
+                        <label for="nodeIp">IP Address *</label>
+                        <input type="text" id="nodeIp" name="node_ip" required 
+                               placeholder="e.g., 192.168.1.100">
+                        <small class="form-text">Public or private IP address of the node</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="nodeLocation">Location</label>
+                        <input type="text" id="nodeLocation" name="node_location" 
+                               placeholder="e.g., Data Center Rack A, Office Building">
+                    </div>
+                    <div class="form-group">
+                        <label for="nodeDescription">Description</label>
+                        <textarea id="nodeDescription" name="node_description" rows="3" 
+                                  placeholder="Optional description of this node..."></textarea>
+                    </div>
+                </form>
+                
+                <div class="api-key-section" id="apiKeySection">
+                    <div class="alert alert-info">
+                        <h4><i class="fas fa-key"></i> API Key</h4>
+                        <p>This key is required for the node to communicate with the system.</p>
+                        <div class="api-key-display">
+                            <code id="apiKeyValue">Generating...</code>
+                            <div class="api-key-actions">
+                                <button class="btn-icon" id="copyApiKeyBtn">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                                <button class="btn-icon" id="regenerateApiKeyBtn">
+                                    <i class="fas fa-redo"></i> Regenerate
+                                </button>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning mt-2">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Important:</strong> Save this API key securely. You won't be able to see it again after closing this dialog.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary close-modal">Cancel</button>
+                <button class="btn btn-primary" id="saveNodeBtn">
+                    <i class="fas fa-save"></i> Save Node
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Node Details Modal -->
+    <div class="modal" id="nodeDetailsModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 id="nodeDetailsTitle">Node Details</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="node-details">
+                    <div class="details-header">
+                        <div class="node-status">
+                            <span class="status-badge" id="detailStatus">Active</span>
+                        </div>
+                        <div class="node-actions">
+                            <button class="btn btn-sm btn-primary" id="editNodeBtn">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" id="deleteNodeBtn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>Node Name:</label>
+                            <span id="detailName">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>IP Address:</label>
+                            <span id="detailIp">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Location:</label>
+                            <span id="detailLocation">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Created:</label>
+                            <span id="detailCreated">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Last Activity:</label>
+                            <span id="detailLastActivity">-</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>API Key:</label>
+                            <span class="api-key-masked" id="detailApiKey">
+                                ************************
+                                <button class="btn-icon" id="showApiKey">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="details-stats">
+                        <h4>Node Statistics</h4>
+                        <div class="stats-cards">
+                            <div class="stat-card-sm">
+                                <div class="stat-value" id="detailPackets">0</div>
+                                <div class="stat-label">Packets Today</div>
+                            </div>
+                            <div class="stat-card-sm">
+                                <div class="stat-value" id="detailBandwidth">0 MB</div>
+                                <div class="stat-label">Bandwidth Used</div>
+                            </div>
+                            <div class="stat-card-sm">
+                                <div class="stat-value" id="detailAlerts">0</div>
+                                <div class="stat-label">Active Alerts</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-traffic">
+                        <h4>Recent Traffic</h4>
+                        <div class="traffic-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Source IP</th>
+                                        <th>Dest IP</th>
+                                        <th>Protocol</th>
+                                        <th>Size</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detailTrafficBody">
+                                    <!-- Traffic will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/nodes.js"></script>
+</body>
+</html>
